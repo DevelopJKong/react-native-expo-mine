@@ -1,6 +1,11 @@
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import React, { useEffect, useState } from "react";
-import { ActivityIndicator, Dimensions, StyleSheet } from "react-native";
+import {
+  ActivityIndicator,
+  Dimensions,
+  StyleSheet,
+  useColorScheme,
+} from "react-native";
 import Swiper from "react-native-web-swiper";
 import styled from "styled-components/native";
 import { BlurView } from "expo-blur";
@@ -22,11 +27,42 @@ const Loader = styled.View`
 
 const BgImg = styled.Image``;
 
-const Title = styled.Text``;
+const Poster = styled.Image`
+  width: 100px;
+  height: 160px;
+`;
+
+const Title = styled.Text`
+  font-size: 16px;
+  font-weight: 600;
+  color: black;
+`;
+
+const Wrapper = styled.View`
+  flex-direction: row;
+  height: 100%;
+  justify-content: center;
+  align-items: center;
+`;
+
+const Column = styled.View`
+  margin-left:10px;
+  width: 40%;
+`;
+
+const Overview = styled.Text`
+  margin-top:10px;
+  color:rgba(0,0,0,0.7);
+`;
+
+const Votes = styled(Overview)`
+  font-size: 12px;
+`;
 
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 
 const Movies = () => {
+  const isDark = useColorScheme() === "dark";
   const [loading, setLoading] = useState(true);
   const [nowPlaying, setNowPlaying] = useState([]);
   const getNowPlaying = async () => {
@@ -59,8 +95,19 @@ const Movies = () => {
               style={StyleSheet.absoluteFill}
               source={{ uri: makeImgPath(movie.backdrop_path) }}
             />
-            <BlurView intensity={80} style={StyleSheet.absoluteFill}>
-              <Title>{movie.original_title}</Title>
+            <BlurView
+              tint={isDark ? "dark" : "light"}
+              intensity={80}
+              style={StyleSheet.absoluteFill}
+            >
+              <Wrapper>
+                <Poster source={{ uri: makeImgPath(movie.poster_path) }} />
+                <Column>
+                  <Title>{movie.original_title}</Title>
+                  <Overview>{movie.overview.slice(0,50)}...</Overview>
+                  <Votes>⭐{movie.vote_average}/10</Votes>
+                </Column>
+              </Wrapper>
             </BlurView>
           </View>
         ))}
